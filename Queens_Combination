@@ -1,0 +1,15 @@
+public static void combSeats2D(int total_c, int total_r, int r, int c, String path, int Qtp) {
+		if (Qtp == 0) {
+			System.out.println(path);
+			return;
+		}
+		if (c == total_c) {
+			c = 0;
+			r++;
+		}
+		if (r == total_r) {
+			return;
+		}
+		combSeats2D(total_c, total_r, r, c + 1, path + "{" + r + "," + c + "}", Qtp - 1);
+		combSeats2D(total_c, total_r, r, c + 1, path, Qtp);
+	}
