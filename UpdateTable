@@ -1,0 +1,97 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Scanner;
+
+public class UpdateTest1 {
+
+	public static void main(String[] args) {
+		Scanner sc=null;
+		Connection con=null;
+		Statement st= null;
+		try {
+			//read inputs
+			sc=new Scanner(System.in);
+			float hike_percentage=0.0f;
+			String desg1=null,desg2=null,desg3=null;
+			if(sc!=null) {
+				System.out.println("employee desg1::");
+				desg1=sc.next().toUpperCase();//Gives Clerk
+				System.out.println("employee desg2::");
+				desg2=sc.next().toUpperCase();//gives Manager
+				System.out.println("employee desg3::");
+				desg3=sc.next().toUpperCase();//ANALYST
+			hike_percentage=sc.nextFloat();
+			}
+			
+			//convert input value into SQl query
+			desg1="'"+desg1+"'";//gives 'CLERK'
+			desg2="'"+desg2+"'";//gives 'MANAGER'
+			desg3="'"+desg3+"'";//gives 'ANALYST'
+			
+			//register jdbc driver by loading JDBC driver
+//			Class.forName("oracle.jdbc.driver.OracleDriver");
+			
+			//Estsblish the connection
+			con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl","system","system");
+			//create statement object
+			if(con!=null)
+				st=con.createStatement();
+			
+			//prepare SQL query
+			//update emp set sal=sal(sal*10/100)where job in('CLERK','MANAGER','ANALYST');
+			String query="update emp set sal=sal+(sal*"+hike_percentage/100+")where job in("+desg1+","+desg2+","+desg3+")";
+			System.out.println(query);
+			
+			//Send and Excute SQL query in DB s/w
+			int count=0;
+			if(st!=null)
+				count=st.executeUpdate(query);
+			
+			//process the ResultSet object
+			if(count==0)
+				System.out.println("NO records found for updation");
+			else
+				System.out.println("no. of record that are effected::"+count);
+		}//try
+			
+		
+		catch(SQLException se) {
+			if(se.getErrorCode()>=900 && se.getErrorCode()<=999)
+				System.out.println("Invalid col names or table names or SQL keywords");
+			else if(se.getErrorCode()==12899)
+				System.out.println("Do not insert more the col size data to sname,sadd cols");
+			
+			se.printStackTrace();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			//close jdbc objs 
+			try {
+				if(st!=null)
+					st.close();
+			}
+			catch(SQLException se) {
+				se.printStackTrace();
+			}
+			try {
+				if(con!=null)
+					con.close();
+			}
+			catch(SQLException se) {
+				se.printStackTrace();
+			}
+			try {
+				if(sc!=null)
+					sc.close();
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}//finally
+	}//main
+
+}//class
